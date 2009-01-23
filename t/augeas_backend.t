@@ -1,9 +1,9 @@
 # -*- cperl -*-
 # $Author: ddumont $
 # $Date: 2008-07-04 16:14:06 +0200 (Fri, 04 Jul 2008) $
-# $Revision: 707 $
+# $Revision: 847 $
 
-# test augeas backend if Config::Augeas is installed
+# test augeas backend 
 
 use ExtUtils::testlib;
 use Test::More ;
@@ -31,7 +31,7 @@ if ( $@ ) {
     plan skip_all => 'Config::Augeas is not installed';
 }
 else {
-    plan tests => 13;
+    plan tests => 18;
 }
 
 ok(1,"compiled");
@@ -49,89 +49,7 @@ copy($r_root.'etc/hosts',$wr_root.'etc/') ;
 copy($r_root.'etc/ssh/sshd_config',$wr_root.'etc/ssh/') ;
 
 # set_up data
-
-$model->create_config_class 
-  (
-   name => 'Host',
-
-   element => [
-	       [qw/ipaddr canonical alias/] 
-	       => { type => 'leaf',
-		    value_type => 'uniline',
-		  } 
-	      ]
-   );
-
-
-$model->create_config_class 
-  (
-   name => 'Hosts',
-
-   read_config  => [ { backend => 'augeas', 
-		       config_file => '/etc/hosts',
-		       set_in => 'record',
-		       save   => 'backup',
-		       lens_with_seq => ['record'],
-		     },
-		   ],
-
-   element => [
-	       record => { type => 'list',
-			   cargo => { type => 'node',
-				      config_class_name => 'Host',
-				    } ,
-			 },
-	      ]
-   );
-
-$model->create_config_class 
-  (
-   name => 'Sshd',
-
-   'read_config'
-   => [ { backend => 'augeas', 
-	  config_file => '/etc/ssh/sshd_config',
-	  save   => 'backup',
-	  lens_with_seq => [qw/AcceptEnv AllowGroups AllowUsers 
-                                         DenyGroups  DenyUsers/],
-		     },
-		   ],
-
-   element => [
-	       'AcceptEnv',
-	       {
-		'cargo' => {
-			    'value_type' => 'uniline',
-			    'type' => 'leaf'
-			   },
-		'type' => 'list',
-	       },
-	       'HostbasedAuthentication',
-	       {
-		'value_type' => 'boolean',
-		'type' => 'leaf',
-	       },
-	       'HostKey',
-	       {
-		'cargo' => {
-			    'value_type' => 'uniline',
-			    'type' => 'leaf'
-			   },
-		'type' => 'list',
-	       },
-	       'Subsystem',
-	       {
-		'cargo' => {
-			    'value_type' => 'uniline',
-			    'mandatory' => '1',
-			    'type' => 'leaf'
-			   },
-		'type' => 'hash',
-		'index_type' => 'string'
-	       },
-	      ]
-   );
-
+do "t/test_model.pl" ;
 
 my $i_hosts = $model->instance(instance_name    => 'hosts_inst',
 			       root_class_name  => 'Hosts',
@@ -165,6 +83,7 @@ $dump = $i_root->dump_tree ;
 print $dump if $trace ;
 
 $i_hosts->write_back ;
+ok(1,"/etc/hosts write back done") ;
 
 my $aug_file      = $wr_root.'etc/hosts';
 my $aug_save_file = $aug_file.'.augsave' ;
@@ -189,6 +108,7 @@ is($nb,4,"Check nb of hosts in Augeas") ;
 # delete last entry
 $i_root->load("record~3");
 $i_hosts->write_back ;
+ok(1,"/etc/hosts write back after deletion of record~3 (goner) done") ;
 
 $nb = $augeas_obj -> count_match("/files/etc/hosts/*") ;
 is($nb,3,"Check nb of hosts in Augeas after deletion") ;
@@ -200,7 +120,7 @@ close AUG;
 
 
 
-$augeas_obj->print(*STDOUT, '') if $trace;
+$augeas_obj->print('/') if $trace;
 
 my $have_pkg_config = `pkg-config --version` || '';
 chomp $have_pkg_config ;
@@ -224,18 +144,45 @@ ok( $i_sshd, "Created instance for sshd" );
 
 ok( $i_sshd, "Created instance for /etc/ssh/sshd_config" );
 
+open(SSHD,"$wr_root/etc/ssh/sshd_config")
+  || die "can't open file: $!";
+
+my @sshd_orig = <SSHD> ;
+close SSHD ;
+
 my $sshd_root = $i_sshd->config_root ;
 
 my $ssh_augeas_obj = $sshd_root->{backend}{augeas}->_augeas_object ;
 
-$ssh_augeas_obj->print(*STDOUT, '/files/etc/ssh/sshd_config/*') if $trace;
+$ssh_augeas_obj->print('/files/etc/ssh/sshd_config/*') if $trace;
 #my @aug_content = $ssh_augeas_obj->match("/files/etc/ssh/sshd_config/*") ;
 #print join("\n",@aug_content) ;
 
 $expect = "AcceptEnv=LC_PAPER,LC_NAME,LC_ADDRESS,LC_TELEPHONE,LC_MEASUREMENT,LC_IDENTIFICATION,LC_ALL
-HostbasedAuthentication=0
+AllowUsers=foo,bar\@192.168.0.*
+HostbasedAuthentication=no
 HostKey=/etc/ssh/ssh_host_key,/etc/ssh/ssh_host_rsa_key,/etc/ssh/ssh_host_dsa_key
-Subsystem:sftp=/usr/lib/openssh/sftp-server -
+Subsystem:rftp=/usr/lib/openssh/rftp-server
+Subsystem:sftp=/usr/lib/openssh/sftp-server
+Subsystem:tftp=/usr/lib/openssh/tftp-server
+Match:0
+  Condition
+    User=domi -
+  Settings
+    AllowTcpForwarding=yes - -
+Match:1
+  Condition
+    User=Chirac
+    Group=pres.* -
+  Settings
+    Banner=/etc/bienvenue1.txt - -
+Match:2
+  Condition
+    User=bush
+    Group=pres.*
+    Host=white.house.* -
+  Settings
+    Banner=/etc/welcome.txt - - -
 ";
 
 $dump = $sshd_root->dump_tree ;
@@ -243,7 +190,10 @@ print $dump if $trace ;
 is( $dump , $expect,"check dump of augeas data");
 
 # change data content, '~' is like a splice, 'record~0' like a "shift"
-$sshd_root->load("HostbasedAuthentication=1") ;
+$sshd_root->load("HostbasedAuthentication=yes 
+                  Subsystem:ddftp=/home/dd/bin/ddftp
+                  Subsystem~rftp
+                  ") ;
 
 $dump = $sshd_root->dump_tree ;
 print $dump if $trace ;
@@ -255,19 +205,50 @@ my $aug_save_sshd_file = $aug_sshd_file.'.augsave' ;
 ok(-e $aug_save_sshd_file, 
    "check that backup config file $aug_save_sshd_file was written");
 
-@expect = (
-"# only a few parameters for augeas tests in core module\n",
-"# leaf, list and hash elements\n",
-"AcceptEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT LC_IDENTIFICATION LC_ALL\n",
-"HostbasedAuthentication 1\n",
-"HostKey              /etc/ssh/ssh_host_key\n",
-"HostKey              /etc/ssh/ssh_host_rsa_key\n",
-"HostKey              /etc/ssh/ssh_host_dsa_key\n",
-"Subsystem            sftp /usr/lib/openssh/sftp-server\n",
-	     );
+my @mod = @sshd_orig;
+$mod[2] = "HostbasedAuthentication yes\n";
+splice @mod, 8,0,"Protocol 1,2\n";
+
+$mod[15] = "Subsystem            ddftp /home/dd/bin/ddftp\n";
 
 open(AUG,$aug_sshd_file) || die "Can't open $aug_sshd_file:$!"; 
-is_deeply([<AUG>],\@expect,"check content of $aug_sshd_file") ;
+is_deeply([<AUG>],\@mod,"check content of $aug_sshd_file") ;
 close AUG;
 
-}
+$sshd_root->load("Match~1") ;
+
+$i_sshd->write_back ;
+
+my @lines = splice @mod,30,4 ;
+push @mod, @lines[2,3] ;
+
+open(AUG,$aug_sshd_file) || die "Can't open $aug_sshd_file:$!"; 
+is_deeply([<AUG>],\@mod,"check content of $aug_sshd_file after Match~1") ;
+close AUG;
+
+$sshd_root->load("Match:2 Condition User=sarko Group=pres.* -
+                          Settings  Banner=/etc/bienvenue2.txt") ;
+
+$i_sshd->write_back ;
+
+
+push @mod,"Match User sarko Group pres.*\n","Banner /etc/bienvenue2.txt\n";
+
+
+open(AUG,$aug_sshd_file) || die "Can't open $aug_sshd_file:$!"; 
+is_deeply([<AUG>],\@mod,"check content of $aug_sshd_file after Match:2 ...") ;
+close AUG;
+
+$sshd_root->load("Match:2 Condition User=sarko Group=pres.* -
+                          Settings  AllowTcpForwarding=yes") ;
+
+$i_sshd->write_back ;
+
+splice @mod,35,0,"AllowTcpForwarding yes\n";
+
+open(AUG,$aug_sshd_file) || die "Can't open $aug_sshd_file:$!"; 
+is_deeply([<AUG>],\@mod,"check content of $aug_sshd_file after Match:2 AllowTcpForwarding=yes") ;
+close AUG;
+
+
+} # end SKIP section
