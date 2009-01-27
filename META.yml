@@ -1,6 +1,6 @@
 ---
 name: Config-Model-Backend-Augeas
-version: 0.103
+version: 0.104
 author:
   - Dominique Dumont (ddumont at cpan dot org)
 abstract: Read and write configuration data through Augeas
@@ -19,7 +19,7 @@ build_requires:
 provides:
   Config::Model::Backend::Augeas:
     file: lib/Config/Model/Backend/Augeas.pm
-    version: 0.103
+    version: 0.104
 generated_by: Module::Build version 0.3
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html
