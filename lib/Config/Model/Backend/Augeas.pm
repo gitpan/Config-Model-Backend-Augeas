@@ -1,6 +1,6 @@
 # $Author: ddumont $
-# $Date: 2009-01-27 13:37:58 +0100 (Tue, 27 Jan 2009) $
-# $Revision: 853 $
+# $Date: 2009-03-31 18:20:13 +0200 (Tue, 31 Mar 2009) $
+# $Revision: 911 $
 
 #    Copyright (c) 2008-2009 Dominique Dumont.
 #
@@ -32,7 +32,7 @@ my $has_augeas = 1;
 eval { require Config::Augeas ;} ;
 $has_augeas = 0 if $@ ;
 
-our $VERSION = '0.105';
+our $VERSION = '0.106';
 
 =head1 NAME
 
