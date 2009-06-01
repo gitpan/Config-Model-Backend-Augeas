@@ -1,6 +1,6 @@
 ---
 name: Config-Model-Backend-Augeas
-version: 0.106
+version: 0.107
 author:
   - Dominique Dumont (ddumont at cpan dot org)
 abstract: Read and write configuration data through Augeas
@@ -9,7 +9,7 @@ resources:
   license: http://opensource.org/licenses/lgpl-license.php
 requires:
   Config::Augeas: 0.303
-  Config::Model: 0.631
+  Config::Model: 0.636
   Exception::Class: 0
   Log::Log4perl: 1.11
 build_requires:
@@ -19,8 +19,8 @@ build_requires:
 provides:
   Config::Model::Backend::Augeas:
     file: lib/Config/Model/Backend/Augeas.pm
-    version: 0.106
-generated_by: Module::Build version 0.3
+    version: 0.107
+generated_by: Module::Build version 0.33
 meta-spec:
-  url: http://module-build.sourceforge.net/META-spec-v1.2.html
-  version: 1.2
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4

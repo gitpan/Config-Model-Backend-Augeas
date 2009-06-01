@@ -1,6 +1,6 @@
 # $Author: ddumont $
-# $Date: 2008-11-10 16:54:24 +0100 (Mon, 10 Nov 2008) $
-# $Revision: 792 $
+# $Date: 2009-05-28 13:51:31 +0200 (jeu 28 mai 2009) $
+# $Revision: 963 $
 
 #    Copyright (c) 2008 Dominique Dumont.
 #
@@ -41,7 +41,7 @@ my $build = Module::Build->new
 		      'Log::Log4perl'     => '1.11', # for TRACE log level
 		      'Exception::Class'  => 0,
 		      'Config::Augeas' => '0.303',
-		      'Config::Model'  => '0.631',
+		      'Config::Model'  => '0.636',
 		     },
    build_requires => {
 		      'Test::More'        => 0,

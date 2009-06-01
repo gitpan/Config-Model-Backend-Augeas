@@ -1,12 +1,12 @@
 # -*- cperl -*-
 # $Author: ddumont $
 # $Date: 2008-07-04 16:14:06 +0200 (Fri, 04 Jul 2008) $
-# $Revision: 911 $
+# $Revision: 971 $
 
 # test augeas backend 
 
 # workaround Augeas locale bug
-if ($ENV{LC_ALL} ne 'C' or $ENV{LANG} ne 'C') {
+if (not defined $ENV{LC_ALL} or $ENV{LC_ALL} ne 'C' or $ENV{LANG} ne 'C') {
   $ENV{LC_ALL} = $ENV{LANG} = 'C';
   exec("perl $0 @ARGV");
 }
