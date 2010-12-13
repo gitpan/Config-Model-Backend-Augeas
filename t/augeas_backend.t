@@ -1,7 +1,7 @@
 # -*- cperl -*-
 # $Author: ddumont $
 # $Date: 2008-07-04 16:14:06 +0200 (Fri, 04 Jul 2008) $
-# $Revision: 971 $
+# $Revision$
 
 # test augeas backend 
 
@@ -129,8 +129,6 @@ open(AUG,$aug_file) || die "Can't open $aug_file:$!";
 is_deeply([<AUG>],\@expect,"check content of $aug_file after deletion of goner") ;
 close AUG;
 
-
-
 $augeas_obj->print('/') if $trace;
 
 my $have_pkg_config = `pkg-config --version` || '';
@@ -169,8 +167,8 @@ $ssh_augeas_obj->print('/files/etc/ssh/sshd_config/*') if $trace;
 #my @aug_content = $ssh_augeas_obj->match("/files/etc/ssh/sshd_config/*") ;
 #print join("\n",@aug_content) ;
 
-$expect = "AcceptEnv=LC_PAPER,LC_NAME,LC_ADDRESS,LC_TELEPHONE,LC_MEASUREMENT,LC_IDENTIFICATION,LC_ALL
-AllowUsers=foo,bar\@192.168.0.*
+$expect = qq(AcceptEnv=LC_PAPER,LC_NAME,LC_ADDRESS,LC_TELEPHONE,LC_MEASUREMENT,LC_IDENTIFICATION,LC_ALL
+AllowUsers=foo,"bar\@192.168.0.*"
 HostbasedAuthentication=no
 HostKey=/etc/ssh/ssh_host_key,/etc/ssh/ssh_host_rsa_key,/etc/ssh/ssh_host_dsa_key
 Subsystem:rftp=/usr/lib/openssh/rftp-server
@@ -184,17 +182,18 @@ Match:0
 Match:1
   Condition
     User=Chirac
-    Group=pres.* -
+    Group="pres.*" -
   Settings
     Banner=/etc/bienvenue1.txt - -
 Match:2
   Condition
     User=bush
-    Group=pres.*
-    Host=white.house.* -
+    Group="pres.*"
+    Host="white.house.*" -
   Settings
-    Banner=/etc/welcome.txt - - -
-";
+    Banner=/etc/welcome.txt - -
+Ciphers=arcfour256,aes192-cbc,aes192-ctr,aes256-cbc,aes256-ctr -
+);
 
 $dump = $sshd_root->dump_tree ;
 print $dump if $trace ;
@@ -228,10 +227,16 @@ close AUG;
 
 $sshd_root->load("Match~1") ;
 
+$dump = $sshd_root->dump_tree ;
+print $dump if $trace ;
 $i_sshd->write_back ;
 
-my @lines = splice @mod,30,4 ;
-push @mod, @lines[2,3] ;
+my $i=0;
+print "mod--\n",map { $i++ . ': '. $_} @mod,"---\n" if $trace ;
+
+my @lines = splice @mod,37,2 ;
+splice @mod, 33,2, @lines ;
+pop @mod ;
 
 open(AUG,$aug_sshd_file) || die "Can't open $aug_sshd_file:$!"; 
 is_deeply([<AUG>],\@mod,"check content of $aug_sshd_file after Match~1") ;
@@ -255,7 +260,9 @@ $sshd_root->load("Match:2 Condition User=sarko Group=pres.* -
 
 $i_sshd->write_back ;
 
-splice @mod,35,0,"AllowTcpForwarding yes\n";
+$i=0;
+print "mod--\n",map { $i++ . ': '. $_} @mod,"---\n" if $trace ;
+splice @mod,38,0,"AllowTcpForwarding yes\n";
 
 open(AUG,$aug_sshd_file) || die "Can't open $aug_sshd_file:$!"; 
 is_deeply([<AUG>],\@mod,"check content of $aug_sshd_file after Match:2 AllowTcpForwarding=yes") ;
