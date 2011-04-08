@@ -1,4 +1,4 @@
-#    Copyright (c) 2008-2010 Dominique Dumont.
+#    Copyright (c) 2008-2011 Dominique Dumont.
 #
 #    This file is part of Config-Model-Backend-Augeas.
 #
@@ -29,7 +29,7 @@ my $has_augeas = 1;
 eval { require Config::Augeas ;} ;
 $has_augeas = 0 if $@ ;
 
-our $VERSION = '0.108';
+our $VERSION = '0.109';
 
 =head1 NAME
 
@@ -201,7 +201,7 @@ lenses.
 
 Sometimes, the structure of a file loaded by Augeas starts directly
 with a list of items. For instance C</etc/hosts> structure starts with
-a list of lines that specify hosts and IP adresses. The C<set_in>
+a list of lines that specify hosts and IP addresses. The C<set_in>
 parameter specifies an element name in Config::Model root class that
 will hold the configuration data retrieved by Augeas.
 
