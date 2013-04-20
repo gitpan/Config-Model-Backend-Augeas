@@ -17,7 +17,7 @@
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 
 package Config::Model::Backend::Augeas ;
-use Any::Moose ;
+use Mouse ;
 use Carp ;
 use Log::Log4perl qw(get_logger :levels);
  
@@ -32,7 +32,7 @@ my $has_augeas = 1;
 eval { require Config::Augeas ;} ;
 $has_augeas = 0 if $@ ;
 
-our $VERSION = '0.112';
+our $VERSION = '0.113';
 
 my $logger =  get_logger('Backend::Augeas') ;
 

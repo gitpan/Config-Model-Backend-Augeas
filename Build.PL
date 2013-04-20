@@ -37,8 +37,8 @@ my $build = Module::Build->new
 		      'Log::Log4perl'     => '1.11', # for TRACE log level
 		      'Exception::Class'  => 0,
 		      'Config::Augeas'    => '0.303',
-		      'Config::Model'     => '1.255',
-		      'Any::Moose'        => 0,
+		      'Config::Model'     => '2.034',
+		      'Mouse'             => 0,
 
 		     },
    build_requires => {
@@ -52,4 +52,5 @@ my $build = Module::Build->new
    add_to_cleanup => [qw/wr_root r_root/],
   );
 
+$build->add_build_element('pl');
 $build->create_build_script;
