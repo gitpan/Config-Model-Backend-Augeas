@@ -19,7 +19,7 @@ name: Config-Model-Backend-Augeas
 provides:
   Config::Model::Backend::Augeas:
     file: lib/Config/Model/Backend/Augeas.pm
-    version: 0.113
+    version: 0.114
 requires:
   Config::Augeas: 0.303
   Config::Model: 2.034
@@ -28,4 +28,4 @@ requires:
   Mouse: 0
 resources:
   license: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
-version: 0.113
+version: 0.114
