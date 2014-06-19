@@ -32,7 +32,7 @@ my $has_augeas = 1;
 eval { require Config::Augeas ;} ;
 $has_augeas = 0 if $@ ;
 
-our $VERSION = '0.116';
+our $VERSION = '0.117';
 
 my $logger =  get_logger('Backend::Augeas') ;
 
@@ -448,7 +448,6 @@ sub copy_in_augeas {
     # https://fedorahosted.org/augeas/ticket/24
 
     my @scan_args = (
-		     experience            => 'master',
 		     fallback              => 'all',
 		     auto_vivify           => 0,
 		     list_element_cb       => \&list_element_cb,

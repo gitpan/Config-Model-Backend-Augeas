@@ -29,9 +29,10 @@ print "Note: Augeas integration tests require Augeas library > 0.3.3\n\n";
 my $build = Module::Build->new
   (
    module_name    => 'Config::Model::Backend::Augeas',
-   license        => 'lgpl',
+   license        => 'LGPL_2_1',
    dist_abstract  => 'Read and write configuration data through Augeas',
    dist_author    => 'Dominique Dumont (ddumont at cpan dot org)',
+   configure_requires => { 'Module::Build' => '0.36' },
    requires       => {
 		      'Log::Log4perl'     => '1.11', # for TRACE log level
 		      'Exception::Class'  => 0,
