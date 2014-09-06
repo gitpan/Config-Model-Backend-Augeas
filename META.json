@@ -4,7 +4,7 @@
       "Dominique Dumont (ddumont at cpan dot org)"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "Module::Build version 0.4205",
+   "generated_by" : "Module::Build version 0.4208",
    "license" : [
       "lgpl_2_1"
    ],
@@ -41,7 +41,7 @@
    "provides" : {
       "Config::Model::Backend::Augeas" : {
          "file" : "lib/Config/Model/Backend/Augeas.pm",
-         "version" : "0.117"
+         "version" : "0.118"
       }
    },
    "release_status" : "stable",
@@ -50,5 +50,5 @@
          "http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt"
       ]
    },
-   "version" : "0.117"
+   "version" : "0.118"
 }

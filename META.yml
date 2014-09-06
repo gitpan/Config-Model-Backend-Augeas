@@ -11,7 +11,7 @@ build_requires:
 configure_requires:
   Module::Build: '0.36'
 dynamic_config: 1
-generated_by: 'Module::Build version 0.4205, CPAN::Meta::Converter version 2.141520'
+generated_by: 'Module::Build version 0.4208, CPAN::Meta::Converter version 2.142060'
 license: lgpl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -20,7 +20,7 @@ name: Config-Model-Backend-Augeas
 provides:
   Config::Model::Backend::Augeas:
     file: lib/Config/Model/Backend/Augeas.pm
-    version: '0.117'
+    version: '0.118'
 requires:
   Config::Augeas: '0.303'
   Config::Model: '2.034'
@@ -29,4 +29,4 @@ requires:
   Mouse: '0'
 resources:
   license: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
-version: '0.117'
+version: '0.118'
